@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaflet Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 800px; }
+  </style>
+</head>
+    <body>
+        <h1>Find {{ random_city.name }}</h1>
+        <div id="map"></div>
+        <a href='/logout'>
+            <button type="button" id="logout-form-submit">Log Out</button>
+        </a>
+
+        <!-- Add a form with a hidden input to submit the button click -->
+        <form id="nextCityForm" action="/map" method="GET" style="display: none;">
+            <input type="submit" id="nextCitySubmit">
+        </form>
+        <!-- Add a button to find the next random city -->
+        <button onclick="document.getElementById('nextCitySubmit').click()">Find Next Random City</button>
+
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script>
+            var mapClicked = false;
+
+            // Initialize the map
+            var mymap = L.map('map').setView([0, 0], 2);
+
+            // Add a tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mymap);
+
+            function deleteRandomCity(cityId) {
+                fetch('/delete_city', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'city_id=' + cityId
+                })
+            }
+            // Define a function to handle map click events
+            function onMapClick(e) {
+                // Check if the map has already been clicked
+                if (!mapClicked) {
+                    // Get the clicked coordinates
+                    var clickedLatLng = e.latlng;
+
+                    // Create a LatLng object for the random city
+                    var cityLatLng = L.latLng("{{ random_city.latitude }}", " {{ random_city.longitude }}");
+
+                    // Create a polyline between the clicked point and the city
+                    var polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'red'}).addTo(mymap);
+
+                    // Update the mapClicked variable to true
+                    mapClicked = true;
+
+                    // Remove the click event listener from the map
+                    mymap.off('click', onMapClick);
+
+                    deleteRandomCity("{{random_city.id}}");
+
+                }
+            }
+
+            // Attach the click event handler to the map
+            mymap.on('click', onMapClick);
+
+        </script>
+
+
+    </body>
+</html>

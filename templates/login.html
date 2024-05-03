@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In</title>
+<link rel="stylesheet" href="../static/css/styles.css">
+<link href='https://fonts.googleapis.com/css?family=REM' rel='stylesheet'>
+<script src="../static/js/login.js"></script>
+</head>
+<body>
+    <div id="main-holder">
+      <h1 id="login-header">Login</h1>
+      {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+      <img src="../static/images/login.jpg" alt="Login Icon" style="width:150px;height:150px;padding-bottom: 5%;">
+        <form id="login-form" method="post">
+            <div id="input-user-pass">
+                <input type="text" id="username" name="username" class="login-form-field" placeholder="Username" required>
+                <input type="password" id="password" name="password" class="login-form-field" placeholder="Password" required>
+            </div>
+
+            <button type="submit" id="login-form-submit">Login</button>
+        </form>
+
+        <p>No account? <a href="/register">Register here</a> </p>
+
+    </div>
+
+</body>
+</html>
