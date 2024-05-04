@@ -126,6 +126,11 @@ def logout():
 @app.route("/map")
 @login_required
 def map():
+    # Check city count after deletion
+    city_count = City.query.count()
+    if city_count == 0:
+        return render_template('leaderboard.html')
+
     cities = City.query.all()
     random_city = random.choice(cities)
 
@@ -142,6 +147,7 @@ def delete_city():
 
     # Commit the changes to the database
     db.session.commit()
+
 
     return "Deleted city successfully"
 
@@ -181,8 +187,6 @@ if __name__ == '__main__':
                 )
                 db.session.add(new_player)
 
-        db.session.commit()
-
         # city
         cities_data = [
             {"name": "New York", "latitude": 40.7128, "longitude": -74.0060},
@@ -191,10 +195,13 @@ if __name__ == '__main__':
             {"name": "Paris", "latitude": 48.8566, "longitude": 2.3522},
         ]
 
-        # add city
+        # add cities
         for city_data in cities_data:
-            city = City(name=city_data['name'], latitude=city_data['latitude'], longitude=city_data['longitude'])
-            db.session.add(city)
+            city = City.query.filter_by(name=city_data["name"]).first()
+            if not city:
+                new_city = City(name=city_data['name'], latitude=city_data['latitude'],
+                                longitude=city_data['longitude'])
+                db.session.add(new_city)
 
         db.session.commit()
 
