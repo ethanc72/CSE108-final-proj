@@ -18,7 +18,7 @@ session = Session()
 
 app = Flask(__name__)
 app.secret_key = "supersecretword"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///grades.sqlite"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 login_manager = LoginManager()
@@ -58,10 +58,27 @@ class Users(UserMixin, db.Model):
 
 
 class City(db.Model):
+    __tablename__ = 'city'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+
+
+
+class Leaderboard(db.Model):
+    __tablename__ = 'leaderboard'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    user = db.relationship('Users', backref=db.backref('scores', lazy=True))
+
+    def __init__(self, user_id, score):
+        self.user_id = user_id
+        self.score = score
+
 
 
 # API routes
@@ -151,10 +168,67 @@ def delete_city():
 
     return "Deleted city successfully"
 
+
+@app.route('/scores', methods=['POST'])
+def create_score():
+    user_id = request.form.get('user_id')
+    score = request.form.get('score')
+    
+    if not user_id or not score:
+        return jsonify({'error': 'Missing user_id or score'}), 400
+    
+    try:
+        new_score = Leaderboard(user_id=user_id, score=score)
+        db.session.add(new_score)
+        db.session.commit()
+        return jsonify({'message': 'Score added successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/scores', methods=['GET'])
+def get_scores():
+    user_id = request.args.get('user_id')
+    if user_id:
+        scores = Leaderboard.query.filter_by(user_id=user_id).all()
+    else:
+        scores = Leaderboard.query.all()
+    
+    return jsonify([{'id': score.id, 'user_id': score.user_id, 'score': score.score, 'date': score.date} for score in scores]), 200
+
+@app.route('/scores/<int:score_id>', methods=['PUT'])
+def update_score(score_id):
+    score_data = Leaderboard.query.get(score_id)
+    if not score_data:
+        return jsonify({'error': 'Score not found'}), 404
+    
+    score = request.form.get('score')
+    if score:
+        score_data.score = score
+        db.session.commit()
+        return jsonify({'message': 'Score updated successfully'}), 200
+    else:
+        return jsonify({'error': 'No score provided'}), 400
+
+
+@app.route('/scores/<int:score_id>', methods=['DELETE'])
+def delete_score(score_id):
+    score = Leaderboard.query.get(score_id)
+    if not score:
+        return jsonify({'error': 'Score not found'}), 404
+    
+    db.session.delete(score)
+    db.session.commit()
+    return jsonify({'message': 'Score deleted successfully'}), 200
+
+
+
 # Flask Admin config
 admin = Admin(app, name='Admin Panel')
 admin.add_view(ModelView(Users, db.session))
 admin.add_view(ModelView(City, db.session))
+admin.add_view(ModelView(Leaderboard, db.session))
 
 if __name__ == '__main__':
     with app.app_context():
