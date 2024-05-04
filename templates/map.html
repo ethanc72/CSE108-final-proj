@@ -16,12 +16,9 @@
             <button type="button" id="logout-form-submit">Log Out</button>
         </a>
 
-        <!-- Add a form with a hidden input to submit the button click -->
-        <form id="nextCityForm" action="/map" method="GET" style="display: none;">
-            <input type="submit" id="nextCitySubmit">
-        </form>
-        <!-- Add a button to find the next random city -->
-        <button onclick="document.getElementById('nextCitySubmit').click()">Find Next Random City</button>
+        <a href='/map'>
+            <button type="button" id="next-random-button">Next City</button>
+        </a>
 
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
         <script>

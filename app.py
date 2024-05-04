@@ -42,6 +42,7 @@ class Users(UserMixin, db.Model):
     username = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
+    score = db.Column(db.Integer, primary_key=False)
     account_type = db.Column(db.String, nullable=False)  # player, or admin
 
     def __init__(self, username, name, password, account_type):
@@ -65,7 +66,6 @@ class City(db.Model):
     longitude = db.Column(db.Float, nullable=False)
 
 
-
 class Leaderboard(db.Model):
     __tablename__ = 'leaderboard'
     id = db.Column(db.Integer, primary_key=True)
@@ -78,7 +78,6 @@ class Leaderboard(db.Model):
     def __init__(self, user_id, score):
         self.user_id = user_id
         self.score = score
-
 
 
 # API routes
@@ -154,6 +153,29 @@ def map():
     return render_template('map.html', random_city=random_city)
 
 
+@app.route('/restart')
+@login_required
+def restart():
+    # city
+    cities_data = [
+        {"name": "New York", "latitude": 40.7128, "longitude": -74.0060},
+        {"name": "London", "latitude": 51.5074, "longitude": -0.1278},
+        {"name": "Tokyo", "latitude": 35.6895, "longitude": 139.6917},
+        {"name": "Paris", "latitude": 48.8566, "longitude": 2.3522},
+    ]
+
+    # add cities
+    for city_data in cities_data:
+        city = City.query.filter_by(name=city_data["name"]).first()
+        if not city:
+            new_city = City(name=city_data['name'], latitude=city_data['latitude'],
+                            longitude=city_data['longitude'])
+            db.session.add(new_city)
+
+    db.session.commit()
+    return redirect('/map')
+
+
 @app.route('/delete_city', methods=['POST'])
 def delete_city():
     city_id = request.form.get('city_id')
@@ -165,7 +187,6 @@ def delete_city():
     # Commit the changes to the database
     db.session.commit()
 
-
     return "Deleted city successfully"
 
 
@@ -173,10 +194,10 @@ def delete_city():
 def create_score():
     user_id = request.form.get('user_id')
     score = request.form.get('score')
-    
+
     if not user_id or not score:
         return jsonify({'error': 'Missing user_id or score'}), 400
-    
+
     try:
         new_score = Leaderboard(user_id=user_id, score=score)
         db.session.add(new_score)
@@ -194,15 +215,17 @@ def get_scores():
         scores = Leaderboard.query.filter_by(user_id=user_id).all()
     else:
         scores = Leaderboard.query.all()
-    
-    return jsonify([{'id': score.id, 'user_id': score.user_id, 'score': score.score, 'date': score.date} for score in scores]), 200
+
+    return jsonify(
+        [{'id': score.id, 'user_id': score.user_id, 'score': score.score, 'date': score.date} for score in scores]), 200
+
 
 @app.route('/scores/<int:score_id>', methods=['PUT'])
 def update_score(score_id):
     score_data = Leaderboard.query.get(score_id)
     if not score_data:
         return jsonify({'error': 'Score not found'}), 404
-    
+
     score = request.form.get('score')
     if score:
         score_data.score = score
@@ -217,11 +240,10 @@ def delete_score(score_id):
     score = Leaderboard.query.get(score_id)
     if not score:
         return jsonify({'error': 'Score not found'}), 404
-    
+
     db.session.delete(score)
     db.session.commit()
     return jsonify({'message': 'Score deleted successfully'}), 200
-
 
 
 # Flask Admin config

@@ -21,7 +21,7 @@
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-        .restart-button {
+        .restart-button{
             margin-top: 20px;
             text-align: center;
         }
@@ -57,13 +57,9 @@
         </tbody>
     </table>
     <div class="restart-button">
-        <button onclick="restart()">Restart</button>
+        <a  href="/restart">
+            <button type="button" >restart</button>
+        </a>
     </div>
-    <script>
-        function restart() {
-            // Reload the page to restart the map with random data
-            location.reload();
-        }
-    </script>
 </body>
 </html>
