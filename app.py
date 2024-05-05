@@ -182,7 +182,17 @@ def map():
     cities = City.query.all()
     random_city = random.choice(cities)
 
-    return render_template('map.html', random_city=random_city, score=current_user.score, current_question=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
+    cities_list = []
+    for city in cities:
+        o = {}
+        o["name"] = city.name
+        o["latitude"] = city.latitude
+        o["longitude"] = city.longitude
+
+        cities_list.append(o)
+    print(json.dumps(cities_list))
+
+    return render_template('map.html', random_city=random_city, cities=json.dumps(cities_list), total_cities=TOTAL_CITY)
 
 
 @app.route('/restart')
@@ -212,7 +222,7 @@ def delete_city():
 
 @app.route('/scores', methods=['POST'])
 def create_score():
-    user_id = request.form.get('user_id')
+    user_id = current_user.id
     score = request.form.get('score')
 
     if not user_id or not score:
