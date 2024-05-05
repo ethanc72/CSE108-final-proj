@@ -12,7 +12,7 @@ from flask_bcrypt import Bcrypt
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine("sqlite:///grades.sqlite")
+engine = create_engine("sqlite:///db.sqlite")
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -42,7 +42,7 @@ class Users(UserMixin, db.Model):
     username = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
-    score = db.Column(db.Integer, primary_key=False)
+    score = db.Column(db.Integer, nullable=False, default=0)
     account_type = db.Column(db.String, nullable=False)  # player, or admin
 
     def __init__(self, username, name, password, account_type):
@@ -150,7 +150,7 @@ def map():
     cities = City.query.all()
     random_city = random.choice(cities)
 
-    return render_template('map.html', random_city=random_city)
+    return render_template('map.html', random_city=random_city, score=4 - city_count)
 
 
 @app.route('/restart')

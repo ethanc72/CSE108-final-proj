@@ -1,0 +1,13 @@
+#map { height: 800px; }
+
+.map-text{
+    display: flex;
+}
+
+.score-text{
+    float: right;
+}
+
+.find-city-text{
+    text-align:left;
+}

@@ -5,12 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Leaflet Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
-    #map { height: 800px; }
-  </style>
+  <link rel="stylesheet" href="../static/css/map.css">
 </head>
     <body>
-        <h1>Find {{ random_city.name }}</h1>
+
+        <h1 class="find-city-text">
+            Find {{ random_city.name }}
+            <span class="score-text">
+                Score: {{score}} / 4
+            </span>
+        </h1>
+
         <div id="map"></div>
         <a href='/logout'>
             <button type="button" id="logout-form-submit">Log Out</button>
