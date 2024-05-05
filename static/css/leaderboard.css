@@ -1,0 +1,49 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    margin-top: 50px;
+}
+
+h1 {
+    color: #263238;
+}
+
+table {
+    background-color: #fff;
+}
+
+thead th {
+    color: #5c6bc0;
+}
+
+tbody tr {
+    background-color: #e3f2fd;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #bbdefb;
+}
+
+.restart-button {
+    margin-top: 20px;
+}
+
+button.btn {
+    background-color: #42a5f5; 
+    color: white;
+}
+
+.navigation {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+button.btn-small {
+    background-color: #2196f3;
+}

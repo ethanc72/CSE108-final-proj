@@ -4,63 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaderboard</title>
-    <style>
-        table {
-            width: 50%;
-            border-collapse: collapse;
-            margin: 20px auto;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .restart-button{
-            margin-top: 20px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <h1>Leaderboard</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Username</th>
-                <th>Score</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>User1</td>
-                <td>1000</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>User2</td>
-                <td>950</td>
-            </tr>
-            <tr>
-                <td>User3</td>
-                <td>3</td>
-                <td>900</td>
 
-            </tr>
-            <!-- Add more rows for additional users -->
-        </tbody>
-    </table>
-    <div class="restart-button">
-        <a  href="/restart">
-            <button type="button" >restart</button>
-        </a>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/leaderboard.css') }}">
+</head>
+<body class="grey lighten-3">
+    <div class="container">
+        <div class="navigation">
+            <a href="{{ url_for('dashboard') }}" class="btn-small waves-effect waves-light grey">
+                <i class="material-icons left">arrow_back</i> Back
+            </a>
+        </div>
+        <h1 class="center-align">Leaderboard</h1>
+        <table class="highlight centered">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for score in scores %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ score.user.username }}</td>
+                    <td>{{ score.score }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="restart-button center">
+            <button class="btn waves-effect waves-light" onclick="restart()">Restart<i class="material-icons right">refresh</i></button>
+        </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        function restart() {
+            location.reload();
+        }
+    </script>
 </body>
 </html>

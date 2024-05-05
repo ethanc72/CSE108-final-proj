@@ -1,0 +1,44 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #e3f2fd;
+}
+
+.dashboard-container, .login-register-container {
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    border-radius: 10px;
+    margin-top: 20px; 
+}
+
+.btn {
+    width: 100%;
+    margin: 10px 0;
+    letter-spacing: 1.2px; 
+}
+
+
+.btn.green {
+    background-color: #66bb6a; 
+}
+
+.btn.blue {
+    background-color: #42a5f5;
+}
+
+.btn.red {
+    background-color: #ef5350; 
+}
+
+h1 {
+    color: #263238; 
+    margin-bottom: 20px;
+}
