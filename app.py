@@ -182,7 +182,7 @@ def map():
     cities = City.query.all()
     random_city = random.choice(cities)
 
-    return render_template('map.html', random_city=random_city, score=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
+    return render_template('map.html', random_city=random_city, score=current_user.score, current_question=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
 
 
 @app.route('/restart')
