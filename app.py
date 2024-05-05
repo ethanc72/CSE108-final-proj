@@ -29,6 +29,8 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 CORS(app)
 
+TOTAL_CITY = 5
+
 
 @login_manager.user_loader
 def load_user(id):
@@ -127,6 +129,7 @@ def register():
 def dashboard():
     return render_template('dashboard.html')
 
+
 @app.route('/')
 @login_required
 def home():
@@ -142,17 +145,28 @@ def logout():
     logout_user()
     return redirect('/login')
 
+
 @app.route('/start_game')
 @login_required
 def start_game():
+    # Check city count
+    city_count = City.query.count()
+    if city_count == 0:
+        add_random_cities()
+
     cities = City.query.all()
     random_city = random.choice(cities)
-    return render_template('map.html', random_city=random_city)
+    city_count = City.query.count()
+
+    return render_template('map.html', random_city=random_city, score=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
+
 
 @app.route('/view_leaderboard')
 @login_required
 def view_leaderboard():
+    render_template('leaderboard.html')
     scores = Leaderboard.query.order_by(Leaderboard.score.desc()).all()
+    print(scores)
     return render_template('leaderboard.html', scores=scores)
 
 
@@ -162,47 +176,36 @@ def map():
     # Check city count after deletion
     city_count = City.query.count()
     if city_count == 0:
-        return render_template('leaderboard.html')
+        # return render_template('leaderboard.html')
+        return redirect('/view_leaderboard')
 
     cities = City.query.all()
     random_city = random.choice(cities)
 
-    return render_template('map.html', random_city=random_city, score=4 - city_count)
+    return render_template('map.html', random_city=random_city, score=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
 
 
 @app.route('/restart')
 @login_required
 def restart():
-    # city
-    cities_data = [
-        {"name": "New York", "latitude": 40.7128, "longitude": -74.0060},
-        {"name": "London", "latitude": 51.5074, "longitude": -0.1278},
-        {"name": "Tokyo", "latitude": 35.6895, "longitude": 139.6917},
-        {"name": "Paris", "latitude": 48.8566, "longitude": 2.3522},
-    ]
-
-    # add cities
-    for city_data in cities_data:
-        city = City.query.filter_by(name=city_data["name"]).first()
-        if not city:
-            new_city = City(name=city_data['name'], latitude=city_data['latitude'],
-                            longitude=city_data['longitude'])
-            db.session.add(new_city)
-
-    db.session.commit()
+    add_random_cities()
     return redirect('/map')
 
 
 @app.route('/delete_city', methods=['POST'])
 def delete_city():
     city_id = request.form.get('city_id')
-    print(city_id)  # Print city ID for debugging purposes
-
+    isCorrect = request.form.get('isCorrect')
     # Delete the city with the given ID from the database
     City.query.filter_by(id=city_id).delete()
 
     # Commit the changes to the database
     db.session.commit()
+
+    if isCorrect == "true":
+        # Increment the user's score if the click was correct
+        current_user.score += 1
+        db.session.commit()  # Commit score change to the database
 
     return "Deleted city successfully"
 
@@ -263,6 +266,36 @@ def delete_score(score_id):
     return jsonify({'message': 'Score deleted successfully'}), 200
 
 
+def add_random_cities():
+    # city
+    cities_data = [
+        {"name": "New York", "latitude": 40.7128, "longitude": -74.0060},
+        {"name": "London", "latitude": 51.5074, "longitude": -0.1278},
+        {"name": "Tokyo", "latitude": 35.6895, "longitude": 139.6917},
+        {"name": "Paris", "latitude": 48.8566, "longitude": 2.3522},
+        {"name": "Los Angeles", "latitude": 34.0522, "longitude": -118.2437},
+        {"name": "Rome", "latitude": 41.9028, "longitude": 12.4964},
+        # {"name": "Beijing", "latitude": 39.9042, "longitude": 116.4074},
+        # {"name": "Dubai", "latitude": 25.2769, "longitude": 55.2962}
+        # {"name": "Merced", "latitude": 37.3022, "longitude": -120.4829}
+        # {"name": "Antarctica", "latitude": -82.8628, "longitude": 135}
+
+    ]
+
+    # add cities
+    for city_data in cities_data:
+        city = City.query.filter_by(name=city_data["name"]).first()
+        if not city:
+            new_city = City(name=city_data['name'], latitude=city_data['latitude'],
+                            longitude=city_data['longitude'])
+            db.session.add(new_city)
+
+    db.session.commit()
+
+    global TOTAL_CITY
+    TOTAL_CITY = City.query.count()
+
+
 # Flask Admin config
 admin = Admin(app, name='Admin Panel')
 admin.add_view(ModelView(Users, db.session))
@@ -300,22 +333,6 @@ if __name__ == '__main__':
                 )
                 db.session.add(new_player)
 
-        # city
-        cities_data = [
-            {"name": "New York", "latitude": 40.7128, "longitude": -74.0060},
-            {"name": "London", "latitude": 51.5074, "longitude": -0.1278},
-            {"name": "Tokyo", "latitude": 35.6895, "longitude": 139.6917},
-            {"name": "Paris", "latitude": 48.8566, "longitude": 2.3522},
-        ]
-
-        # add cities
-        for city_data in cities_data:
-            city = City.query.filter_by(name=city_data["name"]).first()
-            if not city:
-                new_city = City(name=city_data['name'], latitude=city_data['latitude'],
-                                longitude=city_data['longitude'])
-                db.session.add(new_city)
-
-        db.session.commit()
+        add_random_cities()
 
     app.run(debug=True)

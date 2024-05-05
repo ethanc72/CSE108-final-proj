@@ -12,7 +12,7 @@
         <h1 class="find-city-text">
             Find {{ random_city.name }}
             <span class="score-text">
-                Score: {{score}} / 4
+                Score: {{score}} / {{total_cities}}
             </span>
         </h1>
 
@@ -37,36 +37,50 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(mymap);
 
-            function deleteRandomCity(cityId) {
+            function deleteRandomCity(cityId, isCorrect) {
                 fetch('/delete_city', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: 'city_id=' + cityId
+                        body: 'city_id=' + encodeURIComponent(cityId) + '&isCorrect=' + encodeURIComponent(isCorrect) // Include isCorrect parameter in the request body
                 })
             }
             // Define a function to handle map click events
             function onMapClick(e) {
-                // Check if the map has already been clicked
                 if (!mapClicked) {
                     // Get the clicked coordinates
                     var clickedLatLng = e.latlng;
 
                     // Create a LatLng object for the random city
-                    var cityLatLng = L.latLng("{{ random_city.latitude }}", " {{ random_city.longitude }}");
+                    var cityLatLng = L.latLng("{{ random_city.latitude }}", "{{ random_city.longitude }}");
 
-                    // Create a polyline between the clicked point and the city
-                    var polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'red'}).addTo(mymap);
+                    // Calculate the distance between clicked point and city in meters
+                    var distance = clickedLatLng.distanceTo(cityLatLng);
+
+                    // Define a threshold distance in meters
+                    var threshold = 500000; // Adjust this value as needed
+
+                    if (distance <= threshold) {
+                        // Award points
+                        // awardPoints();
+
+                        // Create a polyline between the clicked point and the city
+                        var polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'green'}).addTo(mymap);
+                        deleteRandomCity("{{random_city.id}}", true)
+
+                    }else{
+                        // Create a polyline between the clicked point and the city
+                        var polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'red'}).addTo(mymap);
+                        deleteRandomCity("{{random_city.id}}", false)
+
+                    }
 
                     // Update the mapClicked variable to true
                     mapClicked = true;
 
                     // Remove the click event listener from the map
                     mymap.off('click', onMapClick);
-
-                    deleteRandomCity("{{random_city.id}}");
-
                 }
             }
 

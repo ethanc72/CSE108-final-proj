@@ -35,15 +35,13 @@
                 {% endfor %}
             </tbody>
         </table>
+
         <div class="restart-button center">
-            <button class="btn waves-effect waves-light" onclick="restart()">Restart<i class="material-icons right">refresh</i></button>
+            <a  href="/restart">
+                <button class="btn waves-effect waves-light">Restart<i class="material-icons right">refresh</i></button>
+            </a>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script>
-        function restart() {
-            location.reload();
-        }
-    </script>
 </body>
 </html>
