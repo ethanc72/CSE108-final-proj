@@ -124,11 +124,15 @@ def register():
     return render_template('register.html')
 
 
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    return render_template('dashboard.html')
+
 @app.route('/')
 @login_required
 def home():
     if current_user.account_type == "player":
-        return redirect('/map')
+        return redirect('/dashboard')
     if current_user.account_type == "admin":
         return redirect('/admin')
 
@@ -138,6 +142,19 @@ def home():
 def logout():
     logout_user()
     return redirect('/login')
+
+@app.route('/start_game')
+@login_required
+def start_game():
+    cities = City.query.all()
+    random_city = random.choice(cities)
+    return render_template('map.html', random_city=random_city)
+
+@app.route('/view_leaderboard')
+@login_required
+def view_leaderboard():
+    scores = Leaderboard.query.order_by(Leaderboard.score.desc()).all()
+    return render_template('leaderboard.html', scores=scores)
 
 
 @app.route("/map")
