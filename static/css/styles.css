@@ -88,7 +88,10 @@ html {
     display: grid;
     justify-items: center;
     align-items: center;
-    background-image: url(../images/blue.jpg);
+    background-image: url(../images/world1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+ 
   }
   
   #main-holder {
@@ -131,7 +134,7 @@ html {
     padding: 0px 0px 5px 5px;
   }
   #login-form-submit:hover{
-    background-color: blue;
+    background-color: green;
   }
   
   #login-form-submit {
@@ -152,3 +155,4 @@ html {
     padding-top: 45px;
   
   }
+  
