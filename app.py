@@ -1,6 +1,5 @@
 import json
 import random
-from datetime import datetime
 
 from bcrypt import checkpw, hashpw, gensalt
 from flask import Flask, jsonify, redirect, render_template, request, abort, url_for, flash
@@ -150,10 +149,8 @@ def logout():
 @app.route('/start_game')
 @login_required
 def start_game():
-    # Check city count
-    city_count = City.query.count()
-    if city_count == 0:
-        add_random_cities()
+
+    add_random_cities()
 
     cities = City.query.all()
     random_city = random.choice(cities)
@@ -180,10 +177,21 @@ def map():
         # return render_template('leaderboard.html')
         return redirect('/view_leaderboard')
 
+    add_random_cities()
     cities = City.query.all()
     random_city = random.choice(cities)
 
-    return render_template('map.html', random_city=random_city, score=current_user.score, counter=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
+    cities_list = []
+    for city in cities:
+        o = {}
+        o["name"] = city.name
+        o["latitude"] = city.latitude
+        o["longitude"] = city.longitude
+
+        cities_list.append(o)
+    print(json.dumps(cities_list))
+
+    return render_template('map.html', random_city=random_city, cities=json.dumps(cities_list), total_cities=TOTAL_CITY)
 
 
 @app.route('/restart')
@@ -208,17 +216,12 @@ def delete_city():
         current_user.score += 1
         db.session.commit()  # Commit score change to the database
 
-        # Add the player to the leaderboard
-        leaderboard_entry = Leaderboard(user_id=current_user.id, score=current_user.score)
-        db.session.add(leaderboard_entry)
-        db.session.commit()
-
     return "Deleted city successfully"
 
 
 @app.route('/scores', methods=['POST'])
 def create_score():
-    user_id = request.form.get('user_id')
+    user_id = current_user.id
     score = request.form.get('score')
 
     if not user_id or not score:
@@ -281,15 +284,38 @@ def add_random_cities():
         {"name": "Paris", "latitude": 48.8566, "longitude": 2.3522},
         {"name": "Los Angeles", "latitude": 34.0522, "longitude": -118.2437},
         {"name": "Rome", "latitude": 41.9028, "longitude": 12.4964},
-        # {"name": "Beijing", "latitude": 39.9042, "longitude": 116.4074},
-        # {"name": "Dubai", "latitude": 25.2769, "longitude": 55.2962}
-        # {"name": "Merced", "latitude": 37.3022, "longitude": -120.4829}
-        # {"name": "Antarctica", "latitude": -82.8628, "longitude": 135}
+        {"name": "Beijing", "latitude": 39.9042, "longitude": 116.4074},
+        {"name": "Dubai", "latitude": 25.2769, "longitude": 55.2962},
+        {"name": "Merced", "latitude": 37.3022, "longitude": -120.4829},
+        {"name": "Sydney", "latitude": -33.8688, "longitude": 151.2093},
+        {"name": "Mumbai", "latitude": 19.0760, "longitude": 72.8777},
+        {"name": "Toronto", "latitude": 43.65107, "longitude": -79.347015},
+        {"name": "Berlin", "latitude": 52.5200, "longitude": 13.4050},
+        {"name": "Moscow", "latitude": 55.7558, "longitude": 37.6176},
+        {"name": "Rio de Janeiro", "latitude": -22.9068, "longitude": -43.1729},
+        {"name": "Cape Town", "latitude": -33.9249, "longitude": 18.4241},
+        {"name": "Singapore", "latitude": 1.3521, "longitude": 103.8198},
+        {"name": "Mexico City", "latitude": 19.4326, "longitude": -99.1332},
+        {"name": "Seoul", "latitude": 37.5665, "longitude": 126.9780},
+        {"name": "Stockholm", "latitude": 59.3293, "longitude": 18.0686},
+        {"name": "Istanbul", "latitude": 41.0082, "longitude": 28.9784},
+        {"name": "Lagos", "latitude": 6.5244, "longitude": 3.3792},
+        {"name": "Sydney", "latitude": -33.8688, "longitude": 151.2093},
+        {"name": "Bangkok", "latitude": 13.7563, "longitude": 100.5018},
+        {"name": "Nairobi", "latitude": -1.2864, "longitude": 36.8172},
+        {"name": "Vancouver", "latitude": 49.2827, "longitude": -123.1207},
+        {"name": "Buenos Aires", "latitude": -34.6037, "longitude": -58.3816},
+        {"name": "Chicago", "latitude": 41.8781, "longitude": -87.6298}
 
     ]
+    City.query.delete()
+    db.session.commit()
 
+    random.shuffle(cities_data)
+    # pick 10 random cities
+    selected_cities = cities_data[:10]
     # add cities
-    for city_data in cities_data:
+    for city_data in selected_cities:
         city = City.query.filter_by(name=city_data["name"]).first()
         if not city:
             new_city = City(name=city_data['name'], latitude=city_data['latitude'],

@@ -1,10 +1,17 @@
-#map { height: 750px; }
+#map {
+    height: 750px;
+    width: 100%;         
+    border-radius: 0.5rem;    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+}
 
 .map-text{
     display: flex;
+    
 }
 
-.counter-score-text {
+.score-text {
     padding: 0 30px;
     float: right;
 }

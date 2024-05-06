@@ -1,103 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaflet Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/map.css">
 </head>
-    <body>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-5">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-2" id="find_text"></h1>
+            <h1 class="text-2xl" id="score_text"></h1>
 
-        <h1 class="find-city-text">
-            Find {{ random_city.name }}
-            <span class="counter-score-text">
-                Score: {{score}} / {{total_cities}}
-            </span>
-            <span class="counter-score-text">
-                Counter: {{counter}} / {{total_cities}}
-            </span>
-        </h1>
-
-        <div id="map" ></div>
-
-        <div class=" center">
-        <a href='/logout'>
-            <button class="btn waves-effect waves-light center" type="button" id="logout-form-submit">Log Out</button>
-        </a>
-
-        <a href='/map'>
-            <button class="btn waves-effect waves-light" type="button" id="next-random-button">Next City</button>
-        </a>
+            <h1 class="text-xl mb-4" id="question_text"></h1>
         </div>
+        <div id="map" class="h-96 w-full mb-4"></div>
+        
+        <div class="flex justify-around items-center">
+            <a href='/logout'>
+                <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" id="logout-form-submit">Log Out</button>
+            </a>
+            <a href="/dashboard">
+                <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Dashboard</button>
+            </a>
+            <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" id="next-random-button" onclick="next_question()">Next City</button>
+        </div>
+    </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script>
-            var mapClicked = false;
-
-            // Initialize the map
-            var mymap = L.map('map').setView([0, 0], 2);
-
-            // Add a tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(mymap);
-
-            function deleteRandomCity(cityId, isCorrect) {
-                fetch('/delete_city', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                        body: 'city_id=' + encodeURIComponent(cityId) + '&isCorrect=' + encodeURIComponent(isCorrect) // Include isCorrect parameter in the request body
-                })
-            }
-            // Define a function to handle map click events
-            function onMapClick(e) {
-                if (!mapClicked) {
-                    // Get the clicked coordinates
-                    var clickedLatLng = e.latlng;
-
-                    // Create a LatLng object for the random city
-                    var cityLatLng = L.latLng("{{ random_city.latitude }}", "{{ random_city.longitude }}");
-
-                    // Calculate the distance between clicked point and city in meters
-                    var distance = clickedLatLng.distanceTo(cityLatLng);
-
-                    // Define a threshold distance in meters
-                    var threshold = 500000; // Adjust this value as needed
-
-                    if (distance <= threshold) {
-                        // Award points
-                        // awardPoints();
-
-                        // Create a polyline between the clicked point and the city
-                        var polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'green'}).addTo(mymap);
-                        deleteRandomCity("{{random_city.id}}", true)
-
-                    }else{
-                        // Create a polyline between the clicked point and the city
-                        var polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'red'}).addTo(mymap);
-                        deleteRandomCity("{{random_city.id}}", false)
-
-                    }
-
-                    // Update the mapClicked variable to true
-                    mapClicked = true;
-
-                    // Remove the click event listener from the map
-                    mymap.off('click', onMapClick);
-                }
-            }
-
-            // Attach the click event handler to the map
-            mymap.on('click', onMapClick);
-
-        </script>
-
-
-    </body>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var cities_list = {{ cities|safe }};
+        var total_cites = {{ total_cities }};
+    </script>
+    <script src="../static/js/map.js"></script> 
+</body>
 </html>
