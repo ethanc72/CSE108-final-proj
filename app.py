@@ -285,10 +285,10 @@ def add_random_cities():
         {"name": "Paris", "latitude": 48.8566, "longitude": 2.3522},
         {"name": "Los Angeles", "latitude": 34.0522, "longitude": -118.2437},
         {"name": "Rome", "latitude": 41.9028, "longitude": 12.4964},
-        # {"name": "Beijing", "latitude": 39.9042, "longitude": 116.4074},
-        # {"name": "Dubai", "latitude": 25.2769, "longitude": 55.2962}
-        # {"name": "Merced", "latitude": 37.3022, "longitude": -120.4829}
-        # {"name": "Antarctica", "latitude": -82.8628, "longitude": 135}
+        {"name": "Beijing", "latitude": 39.9042, "longitude": 116.4074},
+        {"name": "Dubai", "latitude": 25.2769, "longitude": 55.2962},
+        {"name": "Merced", "latitude": 37.3022, "longitude": -120.4829},
+        #{"name": "Antarctica", "latitude": -82.8628, "longitude": 135}
 
     ]
 

@@ -1,144 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leaflet Map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="../static/css/map.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/map.css">
 </head>
-    <body>
-        <div>
-            <h1 class="find-city-text" id="find_text"></h1>
-            <h1 class="score-text" id="score_text"></h1>
-            <h1 class="score-text" id="question_text"></h1>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-5">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-2" id="find_text"></h1>
+            <h1 class="text-2xl" id="score_text"></h1>
+            <h1 class="text-xl mb-4" id="question_text"></h1>
         </div>
 
-
-        <div id="map"></div>
-        <a href='/logout'>
-            <button type="button" id="logout-form-submit">Log Out</button>
-        </a>
-        <a href="/dashboard">
-            <button type="button" >Dashboard</button>
-        </a>
-        <button type="button" id="next-random-button" onclick="next_question()">Next City</button>
+        <div id="map" class="h-96 w-full mb-4"></div>
         
+        <div class="flex justify-around items-center">
+            <a href='/logout'>
+                <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" id="logout-form-submit">Log Out</button>
+            </a>
+            <a href="/dashboard">
+                <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Dashboard</button>
+            </a>
+            <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" id="next-random-button" onclick="next_question()">Next City</button>
+        </div>
+    </div>
 
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <script>
-            let cities_list = {{ cities|safe }}
-            var mapClicked = false;
-            const total_cites = {{ total_cities }}
-
-            var randomIndex = Math.floor(Math.random() * cities_list.length);
-            var random_city = cities_list[randomIndex];
-            cities_list.splice(randomIndex,1)
-            var polyline
-            var score = 0
-            var question = 1
-
-            function next_question(){
-
-                if (!mapClicked) return
-
-                if (cities_list.length <= 0){
-                    //post score
-                    fetch('/scores', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                            body: 'score=' + encodeURIComponent(score)
-                    }).then(window.location.href = '/view_leaderboard')
-                }
-
-
-                randomIndex = Math.floor(Math.random() * cities_list.length);
-                random_city = cities_list[randomIndex];
-                cities_list.splice(randomIndex,1)
-
-                
-
-                mapClicked = false
-                mymap.removeLayer(polyline)
-                mymap.on('click', onMapClick);
-                //remove existing line
-
-                
-
-                question += 1
-                render_variables()
-            }
-
-            function render_variables(){
-                document.getElementById("find_text").innerHTML = "Find: " + random_city.name
-                document.getElementById("score_text").innerHTML = "Score: " + score + "/" + total_cites
-                document.getElementById("question_text").innerHTML = "Question: " + question + "/" + total_cites  
-            }
-
-            document.onload = render_variables()
-            
-            
-            
-
-            // Initialize the map
-            var mymap = L.map('map').setView([0, 0], 2);
-
-            // Add a tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(mymap);
-
-            // Define a function to handle map click events
-            function onMapClick(e) {
-                if (!mapClicked) {
-                    // Get the clicked coordinates
-                    var clickedLatLng = e.latlng;
-
-                    // Create a LatLng object for the random city
-                    var cityLatLng = L.latLng(random_city.latitude, random_city.longitude);
-
-                    // Calculate the distance between clicked point and city in meters
-                    var distance = clickedLatLng.distanceTo(cityLatLng);
-
-                    // Define a threshold distance in meters
-                    var threshold = 500000; // Adjust this value as needed
-
-                    if (distance <= threshold) {
-                        // Award points
-                        // awardPoints();
-
-                        // Create a polyline between the clicked point and the city
-                         polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'green'}).addTo(mymap);
-                        // deleteRandomCity("{{random_city.id}}", true)
-
-                        score += 1
-
-                    }else{
-                        // Create a polyline between the clicked point and the city
-                         polyline = L.polyline([clickedLatLng, cityLatLng], {color: 'red'}).addTo(mymap);
-                        // deleteRandomCity("{{random_city.id}}", false)
-
-                    }
-
-                    // Update the mapClicked variable to true
-                    mapClicked = true;
-
-                    // Remove the click event listener from the map
-                    mymap.off('click', onMapClick);
-
-                    render_variables()
-                }
-            }
-
-            // Attach the click event handler to the map
-            mymap.on('click', onMapClick);
-
-            
-
-        </script>
-
-
-    </body>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var cities_list = {{ cities|safe }};
+        var total_cites = {{ total_cities }};
+    </script>
+    <script src="../static/js/map.js"></script> 
+</body>
 </html>
