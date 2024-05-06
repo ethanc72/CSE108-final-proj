@@ -1,5 +1,6 @@
 import json
 import random
+from datetime import datetime
 
 from bcrypt import checkpw, hashpw, gensalt
 from flask import Flask, jsonify, redirect, render_template, request, abort, url_for, flash
@@ -182,7 +183,7 @@ def map():
     cities = City.query.all()
     random_city = random.choice(cities)
 
-    return render_template('map.html', random_city=random_city, score=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
+    return render_template('map.html', random_city=random_city, score=current_user.score, counter=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
 
 
 @app.route('/restart')
@@ -206,6 +207,11 @@ def delete_city():
         # Increment the user's score if the click was correct
         current_user.score += 1
         db.session.commit()  # Commit score change to the database
+
+        # Add the player to the leaderboard
+        leaderboard_entry = Leaderboard(user_id=current_user.id, score=current_user.score)
+        db.session.add(leaderboard_entry)
+        db.session.commit()
 
     return "Deleted city successfully"
 
