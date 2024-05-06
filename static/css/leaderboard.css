@@ -1,49 +1,82 @@
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'REM', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(../images/world1.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
 }
 
 .container {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
     padding: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border-radius: 10px;
-    margin-top: 50px;
+    box-shadow: 0 0 5px 2px black;
+    border-radius: 7px;
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
 }
 
 h1 {
     color: #263238;
+    margin-bottom: 15px;
 }
 
 table {
-    background-color: #fff;
+    width: 100%;
+    background-color: transparent;
+    margin-bottom: 10px;
 }
 
 thead th {
-    color: #5c6bc0;
+    color: #42a5f5;
 }
 
 tbody tr {
-    background-color: #e3f2fd;
+    background-color: #f0f0f0;
 }
 
 tbody tr:nth-child(even) {
-    background-color: #bbdefb;
-}
-
-.restart-button {
-    margin-top: 20px;
-}
-
-button.btn {
-    background-color: #42a5f5; 
-    color: white;
+    background-color: #e1e1e1;
 }
 
 .navigation {
     text-align: left;
-    margin-bottom: 20px;
+    width: 100%;
 }
 
-button.btn-small {
+.btn-small {
+    color: white;
+    background-color: #ccc;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.restart-button {
+    text-align: center;
+    width: 100%;
+}
+
+.btn {
+    color: white;
+    background-color: #42a5f5;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    width: auto;
+    display: inline-block;
+}
+
+.btn:hover,
+.btn-small:hover {
     background-color: #2196f3;
+}
+
+.material-icons.left {
+    margin-right: 0.5rem;
 }

@@ -29,7 +29,7 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 CORS(app)
 
-TOTAL_CITY = 5
+TOTAL_CITY = 10
 
 
 @login_manager.user_loader
@@ -156,7 +156,7 @@ def start_game():
     random_city = random.choice(cities)
     city_count = City.query.count()
 
-    return render_template('map.html', random_city=random_city, score=TOTAL_CITY - city_count, total_cities=TOTAL_CITY)
+    return render_template('map.html', random_city=random_city, score=TOTAL_CITY - city_count, total_cities=10)
 
 
 @app.route('/view_leaderboard')
@@ -173,13 +173,13 @@ def view_leaderboard():
 def map():
     # Check city count after deletion
     city_count = City.query.count()
-    if city_count == 0:
+    if city_count == 10:
         # return render_template('leaderboard.html')
         return redirect('/view_leaderboard')
 
-    add_random_cities()
+    # Fetch existing cities from the database
     cities = City.query.all()
-    random_city = random.choice(cities)
+    random_city = random.choice(cities) if cities else None
 
     cities_list = []
     for city in cities:
@@ -189,9 +189,9 @@ def map():
         o["longitude"] = city.longitude
 
         cities_list.append(o)
-    print(json.dumps(cities_list))
 
-    return render_template('map.html', random_city=random_city, cities=json.dumps(cities_list), total_cities=TOTAL_CITY)
+    return render_template('map.html', random_city=random_city, cities=json.dumps(cities_list), total_cities=10)
+
 
 
 @app.route('/restart')
@@ -312,10 +312,9 @@ def add_random_cities():
     db.session.commit()
 
     random.shuffle(cities_data)
-    # pick 10 random cities
-    selected_cities = cities_data[:10]
+
     # add cities
-    for city_data in selected_cities:
+    for city_data in cities_data:
         city = City.query.filter_by(name=city_data["name"]).first()
         if not city:
             new_city = City(name=city_data['name'], latitude=city_data['latitude'],

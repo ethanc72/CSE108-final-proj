@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="../static/css/dashboard.css">
+    <link href='https://fonts.googleapis.com/css?family=REM' rel='stylesheet'>
 </head>
 <body>
-    {% if current_user.is_authenticated %}
-    <div class="dashboard-container card">
-        <h1 class="card-title">Welcome, {{ current_user.username }}!</h1>
-        <p class="card-content">Choose an option to begin:</p>
+    <div id="main-holder">
+        {% if current_user.is_authenticated %}
+        <h1 id="login-header">Welcome, {{ current_user.username }}!</h1>
+        <p>Choose an option to begin:</p>
         <div class="game-options">
-            <a href="{{ url_for('map') }}" class="btn waves-effect waves-light green">Play Game</a>
-            <a href="{{ url_for('view_leaderboard') }}" class="btn waves-effect waves-light blue">Leaderboard</a>
+            <a href="{{ url_for('map') }}" class="btn" id="login-form-submit">Play Game</a>
+            <a href="{{ url_for('view_leaderboard') }}" class="btn" id="login-form-submit">Leaderboard</a>
+            <a href="{{ url_for('logout') }}" class="btn" id="login-form-submit" style="background-color: #ef5350;">Logout</a>
         </div>
-        <a href="{{ url_for('logout') }}" class="btn waves-effect waves-light red">Logout</a>
+        {% else %}
+        <div id="login-error-msg-holder">
+            <p>You are not logged in. <a href="{{ url_for('login') }}">Login</a> or <a href="{{ url_for('register') }}">Register</a> to start guessing!</p>
+        </div>
+        {% endif %}
     </div>
-    {% else %}
-    <div class="login-register-container card">
-        <p class="card-content">You are not logged in. <a href="{{ url_for('login') }}" class="waves-effect waves-light btn">Login</a> or <a href="{{ url_for('register') }}" class="waves-effect waves-light btn">Register</a> to start guessing!</p>
-    </div>
-    {% endif %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="../static/js/materialize.min.js"></script>
 </body>
 </html>

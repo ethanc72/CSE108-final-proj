@@ -11,8 +11,9 @@ var question = 1
 function next_question(){
 
     if (!mapClicked) return
-
-    if (cities_list.length <= 0){
+    
+    console.log(total_cites)
+    if (cities_list.length <= 18){
         //post score
         fetch('/scores', {
             method: 'POST',

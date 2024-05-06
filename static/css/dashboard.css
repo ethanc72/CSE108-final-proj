@@ -1,44 +1,55 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    height: 100%;
     margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background-color: #e3f2fd;
+    font-family: 'REM', sans-serif;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    background-image: url(../images/world1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-.dashboard-container, .login-register-container {
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-    width: 90%;
+html {
+    height: 100%;
+    font-family: 'REM', sans-serif;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+}
+
+#main-holder {
+    width: 100%;
     max-width: 600px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 7px;
+    box-shadow: 0 0 5px 2px black;
     text-align: center;
-    border-radius: 10px;
-    margin-top: 20px; 
 }
 
 .btn {
     width: 100%;
-    margin: 10px 0;
-    letter-spacing: 1.2px; 
+    padding: 10px;
+    margin: 10px -10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    background-color: #42a5f5; 
+    cursor: pointer;
+    display: block;
 }
 
-
-.btn.green {
-    background-color: #66bb6a; 
+.btn:hover {
+    background-color: green;
 }
 
-.btn.blue {
-    background-color: #42a5f5;
+.game-options a {
+    text-decoration: none;
 }
 
-.btn.red {
-    background-color: #ef5350; 
-}
-
-h1 {
-    color: #263238; 
-    margin-bottom: 20px;
+#login-header {
+    margin-top: 0;
+    color: #263238;
 }
