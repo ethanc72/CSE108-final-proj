@@ -8,19 +8,21 @@
   <link rel="stylesheet" href="../static/css/map.css">
 </head>
     <body>
+        <div>
+            <h1 class="find-city-text" id="find_text"></h1>
+            <h1 class="score-text" id="score_text"></h1>
+            <h1 class="score-text" id="question_text"></h1>
+        </div>
 
-        <h1 class="find-city-text" id="find_text">
-                
-        </h1>
-        <h1 id="score_text"></h1>
-        <h1 id="question_text"></h1>
 
         <div id="map"></div>
         <a href='/logout'>
             <button type="button" id="logout-form-submit">Log Out</button>
         </a>
-
-            <button type="button" id="next-random-button" onclick="next_question()">Next City</button>
+        <a href="/dashboard">
+            <button type="button" >Dashboard</button>
+        </a>
+        <button type="button" id="next-random-button" onclick="next_question()">Next City</button>
         
 
         <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
